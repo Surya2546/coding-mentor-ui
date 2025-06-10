@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AI Coding Mentor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  </head>
+
+  <body>
+    <h2>CodeBuddy Assistant</h2>
+
+    <select id="modelSelect">
+      <option value="HuggingFaceH4/zephyr-7b-beta">Zephyr-7B</option>
+      <option value="mistralai/Mistral-7B-Instruct-v0.1">Mistral-7B</option>
+    </select>
+
+    <textarea id="codeInput" rows="6" cols="50">
+def greet(name):
+    print('Hello ' + name)
+greet('John')
+    </textarea><br><br>
+
+    <button onclick="sendToBot()">Send to Mentor</button>
+
+
+    <h3>Response:</h3>
+    <pre id="responseBox" style="background:#f4f4f4; padding:10px; border-radius:8px; white-space:pre-wrap;"></pre>
+
+    <h3>Chat History:</h3>
+    <div id="chatHistory" style="max-height:200px; overflow-y:auto; border:1px solid #ccc; padding:10px;"></div>
+
+
+    <script>
+      async function sendToBot() {
+        const question = document.getElementById("codeInput").value;
+        const model = document.getElementById("modelSelect").value;
+        const responseBox = document.getElementById("responseBox");
+        const chatHistory = document.getElementById("chatHistory");
+
+        responseBox.textContent = "⏳ Thinking...";
+
+        try {
+            const response = await fetch("/ask", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ question, model })
+            });
+
+        
+
+          const data = await response.json();
+          // Assume response includes code in triple backticks
+          const highlighted = data.answer.replace(/```(.*?)\n([\s\S]*?)```/g, (match, lang, code) => {
+            return `<pre><code class="language-${lang.trim()}">${Prism.highlight(code, Prism.languages[lang.trim()] || Prism.languages.javascript, lang.trim())}</code></pre>`;
+          });
+
+          responseBox.innerHTML = highlighted;
+
+
+        const newEntry = document.createElement("div");
+        newEntry.innerHTML = `<b>You:</b> ${question}<br><b>AI:</b> ${data.answer}<br><hr>`;
+        chatHistory.prepend(newEntry);
+        } catch (err) {
+          responseBox.textContent = "⚠️ Error contacting AI backend.";
+        }
+      }
+    </script>
+
+  </body>
+</html>
