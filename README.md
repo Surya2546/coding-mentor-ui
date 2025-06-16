@@ -29,6 +29,7 @@ Make sure the backend is up and running at Replit before accessing the UI.
    git clone https://github.com/Surya2546/coding-mentor-ui.git
    
 2. Open the HTML file in any browser:
+   ```bash
     open index.html
 
 🙋‍♂️ Author
