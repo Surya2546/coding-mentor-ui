@@ -33,4 +33,4 @@ Make sure the backend is up and running at Replit before accessing the UI.
     open index.html
 
 🙋‍♂️ Author
-Maintained by Surya2546.
+Maintained by Chakri.
