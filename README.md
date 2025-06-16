@@ -32,7 +32,9 @@ Make sure the backend is up and running at Replit before accessing the UI.
    ```bash
     open index.html
 
-🙋‍♂️ Author
+---
+
+## 🙋‍♂️ Author
 
 
 Maintained by Chakri.
