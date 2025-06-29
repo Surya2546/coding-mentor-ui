@@ -21,7 +21,7 @@ Make sure the backend is up and running at Replit before accessing the UI.
 - `README.md` – Project information.
 
 ---
-Visit Your Coding Assistant (https://surya2546.github.io/coding-mentor-ui/)
+[Visit Your Coding Assistant](https://surya2546.github.io/coding-mentor-ui/)
 
 ---
 
