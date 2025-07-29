@@ -42,7 +42,7 @@ greet('John')
   responseBox.textContent = "⏳ Thinking...";
 
   try {
-    const response = await fetch("https://4dffe11e-376d-4408-9df9-1697d27afa11-00-2hxgejl0sxsp9.worf.replit.dev/ask", {
+    const response = await fetch("https://ai-coding-mentor-api.onrender.com", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question, model })
@@ -69,7 +69,7 @@ greet('John')
       chatHistory.innerHTML = "⏳ Loading...";
 
       try {
-        const res = await fetch("/history");
+        const res = await fetch("https://ai-coding-mentor-api.onrender.com/history");
         const data = await res.json();
 
         if (!data.history.length) {
