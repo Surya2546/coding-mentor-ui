@@ -33,43 +33,44 @@ greet('John')
   <div id="chatHistory" style="max-height:250px; overflow-y:auto; border:1px solid #ccc; padding:10px;"></div>
 
   <script>
+    const BACKEND_URL = "https://ai-coding-mentor-api.onrender.com";
+
     async function sendToBot() {
-  const question = document.getElementById("codeInput").value;
-  const model = document.getElementById("modelSelect").value;
-  const responseBox = document.getElementById("responseBox");
-  const chatHistory = document.getElementById("chatHistory");
+      const question = document.getElementById("codeInput").value;
+      const model = document.getElementById("modelSelect").value;
+      const responseBox = document.getElementById("responseBox");
+      const chatHistory = document.getElementById("chatHistory");
 
-  responseBox.textContent = "⏳ Thinking...";
+      responseBox.textContent = "⏳ Thinking...";
 
-  try {
-    const response = await fetch("https://ai-coding-mentor-api.onrender.com", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, model })
-    });
+      try {
+        const response = await fetch(`${BACKEND_URL}/ask`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question, model })
+        });
 
-    const data = await response.json();
-    const highlighted = data.answer.replace(/```(.*?)\n([\s\S]*?)```/g, (match, lang, code) => {
-      return `<pre><code class="language-${lang.trim()}">${Prism.highlight(code, Prism.languages[lang.trim()] || Prism.languages.javascript, lang.trim())}</code></pre>`;
-    });
+        const data = await response.json();
+        const highlighted = data.answer.replace(/```(.*?)\n([\s\S]*?)```/g, (match, lang, code) => {
+          return `<pre><code class="language-${lang.trim()}">${Prism.highlight(code, Prism.languages[lang.trim()] || Prism.languages.javascript, lang.trim())}</code></pre>`;
+        });
 
-    responseBox.innerHTML = highlighted;
+        responseBox.innerHTML = highlighted;
 
-    const newEntry = document.createElement("div");
-    newEntry.innerHTML = `<b>You:</b> ${question}<br><b>AI:</b> ${data.answer}<br><hr>`;
-    chatHistory.prepend(newEntry);
-  } catch (err) {
-    responseBox.textContent = "⚠️ Error contacting AI backend.";
-  }
-}
-
+        const newEntry = document.createElement("div");
+        newEntry.innerHTML = `<b>You:</b> ${question}<br><b>AI:</b> ${data.answer}<br><hr>`;
+        chatHistory.prepend(newEntry);
+      } catch (err) {
+        responseBox.textContent = "⚠️ Error contacting AI backend.";
+      }
+    }
 
     async function loadHistory() {
       const chatHistory = document.getElementById("chatHistory");
       chatHistory.innerHTML = "⏳ Loading...";
 
       try {
-        const res = await fetch("https://ai-coding-mentor-api.onrender.com/history");
+        const res = await fetch(`${BACKEND_URL}/history`);
         const data = await res.json();
 
         if (!data.history.length) {
