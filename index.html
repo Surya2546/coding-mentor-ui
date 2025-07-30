@@ -51,12 +51,21 @@ greet('John')
         });
 
         const data = await response.json();
+
+        // If backend returned Hugging Face error, show it directly
+        if (data.answer.startsWith("❌ HF API Error") || data.answer.startsWith("❌ Exception")) {
+          responseBox.textContent = data.answer;
+          return;
+        }
+
+        // Apply syntax highlighting for code blocks
         const highlighted = data.answer.replace(/```(.*?)\n([\s\S]*?)```/g, (match, lang, code) => {
           return `<pre><code class="language-${lang.trim()}">${Prism.highlight(code, Prism.languages[lang.trim()] || Prism.languages.javascript, lang.trim())}</code></pre>`;
         });
 
         responseBox.innerHTML = highlighted;
 
+        // Add to chat history display
         const newEntry = document.createElement("div");
         newEntry.innerHTML = `<b>You:</b> ${question}<br><b>AI:</b> ${data.answer}<br><hr>`;
         chatHistory.prepend(newEntry);
