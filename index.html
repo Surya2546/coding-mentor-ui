@@ -1,9 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>AI Coding Mentor</title>
+  <meta charset="UTF-8">
+  <title>💡 AI Coding Mentor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f8f9fa; }
+    h2 { color: #333; }
+    textarea { width: 100%; max-width: 100%; }
+    button { margin-right: 5px; padding: 6px 12px; cursor: pointer; }
+    #responseBox { background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #ddd; }
+    #chatHistory { max-height: 250px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background: #fff; }
+    select { padding: 5px; }
+  </style>
 </head>
 
 <body>
@@ -17,7 +28,7 @@
 
   <br><br>
 
-  <textarea id="codeInput" rows="8" cols="70">
+  <textarea id="codeInput" rows="8">
 def greet(name):
     print('Hello ' + name)
 greet('John')
@@ -27,19 +38,24 @@ greet('John')
   <button onclick="loadHistory()">📜 View My History</button>
 
   <h3>Response:</h3>
-  <pre id="responseBox" style="background:#f4f4f4; padding:10px; border-radius:8px; white-space:pre-wrap;"></pre>
+  <pre id="responseBox">No response yet.</pre>
 
   <h3>Chat History:</h3>
-  <div id="chatHistory" style="max-height:250px; overflow-y:auto; border:1px solid #ccc; padding:10px;"></div>
+  <div id="chatHistory"><i>No history loaded.</i></div>
 
   <script>
     const BACKEND_URL = "https://ai-coding-mentor-api.onrender.com";
 
     async function sendToBot() {
-      const question = document.getElementById("codeInput").value;
+      const question = document.getElementById("codeInput").value.trim();
       const model = document.getElementById("modelSelect").value;
       const responseBox = document.getElementById("responseBox");
       const chatHistory = document.getElementById("chatHistory");
+
+      if (!question) {
+        responseBox.textContent = "⚠️ Please enter a question or code.";
+        return;
+      }
 
       responseBox.textContent = "⏳ Thinking...";
 
@@ -52,25 +68,26 @@ greet('John')
 
         const data = await response.json();
 
-        // If backend returned Hugging Face error, show it directly
-        if (data.answer.startsWith("❌ HF API Error") || data.answer.startsWith("❌ Exception")) {
-          responseBox.textContent = data.answer;
+        if (!data.answer) {
+          responseBox.textContent = "⚠️ No answer from AI.";
           return;
         }
 
-        // Apply syntax highlighting for code blocks
+        // Syntax highlighting
         const highlighted = data.answer.replace(/```(.*?)\n([\s\S]*?)```/g, (match, lang, code) => {
           return `<pre><code class="language-${lang.trim()}">${Prism.highlight(code, Prism.languages[lang.trim()] || Prism.languages.javascript, lang.trim())}</code></pre>`;
         });
 
         responseBox.innerHTML = highlighted;
 
-        // Add to chat history display
+        // Add to history
         const newEntry = document.createElement("div");
         newEntry.innerHTML = `<b>You:</b> ${question}<br><b>AI:</b> ${data.answer}<br><hr>`;
         chatHistory.prepend(newEntry);
+
       } catch (err) {
         responseBox.textContent = "⚠️ Error contacting AI backend.";
+        console.error(err);
       }
     }
 
@@ -95,6 +112,7 @@ greet('John')
         });
       } catch (err) {
         chatHistory.innerHTML = "⚠️ Failed to load history.";
+        console.error(err);
       }
     }
   </script>
